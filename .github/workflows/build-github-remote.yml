@@ -57,4 +57,5 @@ jobs:
 
       - name: Remove Docker Buildx Remote
         run: |
+          export KUBECONFIG=$PWD/kubeconfig
           kubectl delete namespace buildx-${{ github.sha }}
