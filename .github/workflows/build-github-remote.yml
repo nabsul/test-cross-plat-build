@@ -57,5 +57,4 @@ jobs:
 
       - name: Remove Docker Buildx Remote
         run: |
-          docker buildx rm remote-build
           kubectl delete namespace buildx-${{ github.sha }}
