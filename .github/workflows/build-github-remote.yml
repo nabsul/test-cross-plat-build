@@ -27,8 +27,8 @@ jobs:
           export KUBECONFIG=$PWD/kubeconfig
           kubectl create namespace buildx-${{ github.sha }} || true
           kubectl label namespace buildx-${{ github.sha }} pod-security.kubernetes.io/enforce=privileged --overwrite
-          docker buildx create --name remote-build --use --driver kubernetes --driver-opts namespace=buildx-${{ github.sha }} --driver-opt "nodeselector=kubernetes.io/arch=amd64" --platform linux/amd64
-          docker buildx create --name remote-build --append --driver kubernetes --driver-opts namespace=buildx-${{ github.sha }} --driver-opt "nodeselector=kubernetes.io/arch=arm64" --platform linux/arm64
+          docker buildx create --name remote-build --use --driver kubernetes --driver-opt namespace=buildx-${{ github.sha }} --driver-opt "nodeselector=kubernetes.io/arch=amd64" --platform linux/amd64
+          docker buildx create --name remote-build --append --driver kubernetes --driver-opt namespace=buildx-${{ github.sha }} --driver-opt "nodeselector=kubernetes.io/arch=arm64" --platform linux/arm64
           docker buildx inspect --bootstrap
 
       - name: Log in to the Container registry
