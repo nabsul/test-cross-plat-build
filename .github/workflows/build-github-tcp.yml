@@ -1,4 +1,4 @@
-name: Build - GitHub Remote
+name: Build - GitHub Remote TCP
 
 on:
   workflow_dispatch:
