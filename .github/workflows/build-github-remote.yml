@@ -23,8 +23,9 @@ jobs:
 
       - name: Setup Kunernetes Buildx Remote
         run: |
-          echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > ./kubeconfig
-          export KUBECONFIG=$PWD/kubeconfig
+          mkdir -p /tmp/buildx-config
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > /tmp/buildx-config/kubeconfig
+          export KUBECONFIG=/tmp/buildx-config/kubeconfig
           kubectl create namespace buildx-${{ github.sha }} || true
           kubectl label namespace buildx-${{ github.sha }} pod-security.kubernetes.io/enforce=privileged --overwrite
           docker buildx create --name remote-build --use --driver kubernetes --driver-opt namespace=buildx-${{ github.sha }} --driver-opt "nodeselector=kubernetes.io/arch=amd64" --platform linux/amd64
@@ -57,5 +58,5 @@ jobs:
 
       - name: Remove Docker Buildx Remote
         run: |
-          export KUBECONFIG=$PWD/kubeconfig
+          export KUBECONFIG=/tmp/buildx-config/kubeconfig
           kubectl delete namespace buildx-${{ github.sha }}
