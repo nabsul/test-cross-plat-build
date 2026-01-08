@@ -28,3 +28,5 @@ jobs:
         run: |
           docker buildx version
           docker buildx ls
+          docker buildx ls --format json
+          docker buildx inspect nsc-remote
