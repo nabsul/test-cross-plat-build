@@ -15,8 +15,10 @@ jobs:
         include:
           - platform: linux/amd64
             runner: ubuntu-latest
+            suffix: amd64
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
+            suffix: arm64
     permissions:
       contents: read
       packages: write
@@ -31,16 +33,12 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Prepare platform suffix
-        id: platform
-        run: echo "suffix=$(echo '${{ matrix.platform }}' | tr '/' '-')" >> $GITHUB_OUTPUT
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha,suffix=-${{ steps.platform.outputs.suffix }}
+          tags: type=sha,suffix=-${{ matrix.suffix }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -69,10 +67,21 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha
+          tags: type=sha
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-amd64
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: type=sha,suffix=amd64
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta-arm64
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: type=sha,suffix=arm64
       - name: Create and push multi-arch manifest
         run: |
           docker buildx imagetools create -t ${{ steps.meta.outputs.tags }} \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}-linux-amd64 \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}-linux-arm64
+            ${{ steps.meta-amd64.outputs.tags }} \
+            ${{ steps.meta-arm64.outputs.tags }}
