@@ -1,4 +1,4 @@
-name: Build - GitHub BuildX
+name: Build - GitHub BuildX Matrix No Remote
 
 on:
   push:
