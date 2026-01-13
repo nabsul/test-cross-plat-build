@@ -73,13 +73,13 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: type=sha,suffix=amd64
+          tags: type=sha,suffix=-amd64
       - name: Extract metadata (tags, labels) for Docker
         id: meta-arm64
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: type=sha,suffix=arm64
+          tags: type=sha,suffix=-arm64
       - name: Create and push multi-arch manifest
         run: |
           docker buildx imagetools create -t ${{ steps.meta.outputs.tags }} \
